@@ -39,6 +39,7 @@ Sample Request:
 {
 
   "operation": "fibonacci",
+  
   "value": 10
   
 }
@@ -59,8 +60,11 @@ ai
 {
 
   "is_success": true,
+  
   "official_email": "aditya1762.be23@chitkara.edu.in",
+  
   "data": [0,1,1,2,3,5,8],
+  
   "error": null
   
 }
