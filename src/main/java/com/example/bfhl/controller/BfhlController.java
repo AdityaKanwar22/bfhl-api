@@ -1,10 +1,9 @@
 package com.example.bfhl.controller;
 
+import com.example.bfhl.dto.BfhlRequest;
 import com.example.bfhl.dto.BfhlResponse;
 import com.example.bfhl.service.BfhlService;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 public class BfhlController {
@@ -16,7 +15,7 @@ public class BfhlController {
     }
 
     // ==============================
-    // GET /bfhl (For Browser Testing)
+    // GET /bfhl (Browser test)
     // ==============================
     @GetMapping("/bfhl")
     public String test() {
@@ -27,14 +26,14 @@ public class BfhlController {
     // POST /bfhl (Main API)
     // ==============================
     @PostMapping("/bfhl")
-    public BfhlResponse handle(@RequestBody Map<String, Object> request) {
+    public BfhlResponse handle(@RequestBody BfhlRequest request) {
 
-        if (request.size() != 1) {
-            throw new RuntimeException("Only one key allowed in request");
+        String key = request.getKey();
+        Object value = request.getValue();
+
+        if (key == null || value == null) {
+            throw new RuntimeException("key and value are required");
         }
-
-        String key = request.keySet().iterator().next();
-        Object value = request.get(key);
 
         Object result = service.process(key, value);
 

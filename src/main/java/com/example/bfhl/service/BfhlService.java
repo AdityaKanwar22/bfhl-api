@@ -1,5 +1,6 @@
 package com.example.bfhl.service;
 
+import com.example.bfhl.client.AiClient;
 import com.example.bfhl.enums.OperationType;
 import com.example.bfhl.exception.BadRequestException;
 import org.springframework.stereotype.Service;
@@ -9,6 +10,12 @@ import java.util.List;
 
 @Service
 public class BfhlService {
+
+    private final AiClient aiClient;
+
+    public BfhlService(AiClient aiClient) {
+        this.aiClient = aiClient;
+    }
 
     public Object process(String key, Object value) {
 
@@ -23,24 +30,56 @@ public class BfhlService {
         switch (type) {
 
             case fibonacci:
-                return fibonacci((Integer) value);
+                return fibonacci(convertToInt(value));
 
             case prime:
-                return prime((List<Integer>) value);
+                return prime(convertToList(value));
 
             case lcm:
-                return lcm((List<Integer>) value);
+                return lcm(convertToList(value));
 
             case hcf:
-                return hcf((List<Integer>) value);
+                return hcf(convertToList(value));
 
             case ai:
-                return value.toString();
+                return aiClient.callAI(value.toString());
 
             default:
                 throw new BadRequestException("Invalid key");
         }
     }
+
+    // ==============================
+    // SAFE CONVERSION METHODS
+    // ==============================
+
+    private int convertToInt(Object value) {
+        try {
+            return ((Number) value).intValue();
+        } catch (Exception e) {
+            throw new BadRequestException("Invalid number input");
+        }
+    }
+
+    private List<Integer> convertToList(Object value) {
+        try {
+            List<?> list = (List<?>) value;
+            List<Integer> result = new ArrayList<>();
+
+            for (Object obj : list) {
+                result.add(((Number) obj).intValue());
+            }
+
+            return result;
+
+        } catch (Exception e) {
+            throw new BadRequestException("Invalid list input");
+        }
+    }
+
+    // ==============================
+    // LOGIC METHODS
+    // ==============================
 
     private List<Integer> fibonacci(int n) {
 
@@ -49,8 +88,7 @@ public class BfhlService {
 
         List<Integer> list = new ArrayList<>();
 
-        int a = 0;
-        int b = 1;
+        int a = 0, b = 1;
 
         for (int i = 0; i < n; i++) {
             list.add(a);
